@@ -1,3 +1,5 @@
+(*Demo for variables in ML*)
+
 (* this is a comment *)
 
 val x = 34; (*int *)
