@@ -26,7 +26,7 @@ fun goodComputeMax(xs : int list) =
             if hd xs > tailVal then hd xs  else tailVal
         end
 
-(* int list -> int option*)
+(* int list -> int option -- With Option output*) 
 fun ReComputeGoodMax1(xs : int list) =
     if null xs 
     then NONE 
