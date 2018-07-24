@@ -7,7 +7,7 @@ fun is_older(inDate1 : int * int * int,  inDate2 : int * int * int) =
 
 fun number_in_month(dates : (int * int * int) list, monthNumber : int) =
     let 
-       fun monthinDate(dates : (int * int * int) list) =  (*function inside let to ensure it does not pollute the other codes *)
+       fun monthinDate(dates : (int * int * int) list) =  (*function inside 'let' to ensure it does not pollute the other codes *)
             if null dates 
             then 0 
             else
