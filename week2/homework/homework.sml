@@ -63,12 +63,34 @@ val months = ["January", "February", "March", "April", "May", "June", "July", "A
 fun date_to_string(date : (int * int * int)) =
     get_nth(months, #2 date) ^ " " ^ Int.toString(#3 date) ^ ", " ^ Int.toString(#1 date)
 
-fun number_before_reaching_sum(sumVal : int, datas : int list) =
+
+fun number_before_reaching_sum(sumValue : int, datas : int list) =
     let 
-        fun check_sum(datas : int list, count : int) =
-            if currentsum < sumVal
-            then count
-            else hd datas + checkSum(tl datas, , pos + 1)
+        fun check_sum(datas : int list, valuePair : int * int, sumValue : int) =
+            if (#1 valuePair) < sumValue
+            then check_sum(tl datas, ((#1 valuePair) + hd datas, (#2 valuePair + 1)), sumValue)
+                else #2 valuePair
+    in
+        check_sum(tl datas, (hd datas, 0), sumValue)
+    end
+
+val monthDays = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+
+fun what_month (dayOfTheyear : int) =
+    number_before_reaching_sum(dayOfTheyear, monthDays) + 1
+
+fun month_range (day1 : int, day2 : int) = 
+    if day1 > day2
+    then []
+    else 
+        what_month (day1) :: month_range(day1 + 1, day2)
+
+fun oldest(dates : (int * int * int) list) =
+    if null dates
+    then NONE 
+    else 
+        let 
+            val date = oldest(tl dates)
         in
-            get_word_pos(hd words, tl words, 1)
+            if isSome (date) andalso is_older(valOf (date)  , hd dates) then date else SOME (hd dates)
         end

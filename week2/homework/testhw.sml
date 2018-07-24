@@ -42,5 +42,22 @@ date_to_string (2013, 6, 1) (* June 1, 2013 *)
 
 date_to_string (2018, 12, 5) (* December 5, 2018 *)
 
-date_to_string (2018, 1, 1) (* Janualry 1, 2018*)
+date_to_string (2018, 1, 1) (* January 1, 2018*)
 
+number_before_reaching_sum (10, [1,2,3,4,5]) (* 3 *)
+
+number_before_reaching_sum (26, [1,2,3,4,4,5,6,7]) (* 7 *)
+
+number_before_reaching_sum (25, [1,2,3,4,4,5,6,7]) (* 6 *)
+
+number_before_reaching_sum (31, [1,2,3,4,4,5,6,7]) (* 7 *)
+
+number_before_reaching_sum (32, [1,2,3,4,4,5,6,7]) (* 7 *)
+
+month_range(31, 60) (* [1,2,2,...] last vlue 3*)
+
+month_range(31, 34) (* [1,2,2,2] *)
+
+month_range(31,91) (*[1,2,2,2,2,2,2,2,2,2,2,2,...] last value 4 *)
+
+oldest([(2012,2,28),(2011,3,31),(2011,4,28)]) (* SOME (2011,3,31) *)
