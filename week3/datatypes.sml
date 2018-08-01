@@ -1,8 +1,8 @@
 (* this is a ONE of type *)
 
-datatype myType =  TwoInts of int * int (* function TwoInts: int * int -> myType ==> Evaluation*)
-                  | Str of string (* function Str: string -> myType ==> Evaluation *)
-                  | Pizza  (* value not a function Pizza : myType*)
+datatype myType =  TwoInts of int * int (* function TwoInts: int * int -> myType, This will be later used for evaluation *)
+                  | Str of string (* function Str: string -> myType. This will be later used for evaluation *)
+                  | Pizza  (* this is already a value not a function Pizza : myType*)
 
 (* dataType evaultes to <datatype myType = Pizza | Str of string | TwoInts of int * int> sort by alphabets *)
 
