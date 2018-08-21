@@ -36,7 +36,7 @@ fun get_substitutions2 (xs : string list list, s : string) =
 fun similar_names expr = 
     case expr of
             ([], {first=x, middle=y, last=z}) => [{first=x, middle=y, last=z}]
-        |   ()
+        |   (xs::[], {first=x, middle=y, last=z}) => get_substitutions2(x, xs)
 
 
 
