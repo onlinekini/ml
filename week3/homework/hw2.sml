@@ -6,49 +6,50 @@
 fun same_string(s1 : string, s2 : string) = s1 = s2
 
 
-fun contains (x, xs) =  
-            case (x, xs) of
+fun contains expr =  
+            case expr of
                 (s, []) => false
-            |   (s, xs :: []) => same_string(x, xs)
-            |   (x, xs :: xs') => same_string(x, xs) orelse contains(x, xs')
+            |   (s, xs :: []) => same_string(s, xs)
+            |   (s, xs :: xs') => same_string(s, xs) orelse contains(s, xs')
 
-fun all_except_option (x, xs) =
-    case (x, xs) of
+fun all_except_option expr =
+    case expr of
             (s, []) => []
-        |   (s, xs :: []) => if not(same_string(x, xs)) then xs::[] else []
-        |   (x, xs :: xs') => if not(same_string(x, xs)) then xs :: all_except_option(x, xs') else all_except_option(x, xs')
+        |   (s, xs :: []) => if not(same_string(s, xs)) then xs::[] else []
+        |   (s, xs :: xs') => if not(same_string(s, xs)) then xs :: all_except_option(s, xs') else all_except_option(s, xs')
 
 
-fun get_substitutions1 (xs : string list list, s : string) = 
-    case (s,xs) of 
-            (s, []) => []
-        |   (s, xs::[]) => if contains(s,xs) then all_except_option(s, xs) else []
-        |   (s, xs::xs') => if contains(s,xs) then all_except_option(s, xs) @ get_substitutions1(xs', s) else get_substitutions1(xs', s)
+fun get_substitutions1 expr = 
+    case expr of 
+            ([], _) => []
+        |   (xs::[], s) => if contains(s,xs) then all_except_option(s, xs) else []
+        |   (xs::xs', s) => if contains(s,xs) then all_except_option(s, xs) @ get_substitutions1(xs', s) else get_substitutions1(xs', s)
 
 (*tail Recursion*)
-fun get_substitutions2 (xs : string list list, s : string) = 
-    case (s,xs) of 
-            (s, []) => []
-        |   (s, xs::[]) => if contains(s,xs) then all_except_option(s, xs) else []
-        |   (s, xs::xs') => if contains(s,xs) then all_except_option(s, xs) @ get_substitutions2(xs', s) else get_substitutions2(xs', s)
+fun get_substitutions2 expr = 
+     case expr of 
+            ([], _) => []
+        |   (xs::[], s) => if contains(s,xs) then all_except_option(s, xs) else []
+        |   (xs::xs', s) => if contains(s,xs) then all_except_option(s, xs) @ get_substitutions1(xs', s) else get_substitutions1(xs', s)
 
 
-fun similar_names expr = 
-    case expr of
-            ([], {first=x, middle=y, last=z}) => [{first=x, middle=y, last=z}]
-        |   (xs::[], {first=x, middle=y, last=z}) => get_substitutions2(x, xs)
-
-
+fun similar_names (xs, {first, middle, last}) = 
+    let 
+        val substituted_lsts = get_substitutions1(xs, first)
+        fun replaceFirst expr = 
+            case expr of 
+                [] => [{first=first,middle=middle, last=last}]
+            |   (x::xs') => {first=x, middle=middle, last=last} :: replaceFirst (xs')
+    in    
+      replaceFirst(substituted_lsts)
+    end
 
 (* you may assume that Num is always used with values 2, 3, ..., 10
    though it will not really come up *)
 datatype suit = Clubs | Diamonds | Hearts | Spades
 datatype rank = Jack | Queen | King | Ace | Num of int 
 type card = suit * rank
-
 datatype color = Red | Black
 datatype move = Discard of card | Draw 
-
 exception IllegalMove
 
-(* put your solutions for problem 2 here *)
