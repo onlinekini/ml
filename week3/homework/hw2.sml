@@ -122,3 +122,6 @@ fun score (cs, goal) =
         else 
             (goal - sum_of_cards) div divided_by
     end
+
+
+
