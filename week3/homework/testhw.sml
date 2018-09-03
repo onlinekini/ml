@@ -1,6 +1,11 @@
 use "hw2.sml";
 
-all_except_option("Fred", ["Fred","Fredrick","NONFred"]);
+val happy_path = all_except_option("Fred", ["Fred","Fredrick","NONFred"]);
+val not_exist = all_except_option("Fre", ["Fred","Fredrick","NONFred"]);
+val only_exit = all_except_option("Fred", ["Fred"]);
+
+
+
 get_substitutions1([["Fred","Fredrick"],["Elizabeth","Betty"],["Freddie","Fred","F"]], "Fred");
 get_substitutions1([["Fred","Fredrick"],["Elizabeth","Betty"],["Freddie","Fred","F"]], "Betty");
 get_substitutions1([["Fred","Fredrick"],["Elizabeth","Betty"],["Freddie","Fred","F"]], "F");
@@ -10,13 +15,14 @@ get_substitutions1([["Fred","Fredrick"],["Jeff","Jeffrey"],["Geoff","Jeff","Jeff
 
 similar_names([["Fred","Fredrick"],["Elizabeth","Betty"],["Freddie","Fred","F"]],{first="Fred", middle="W", last="Smith"});
 
-card_color Clubs;
-card_color Spades;
+card_color (Clubs, King);
+card_color (Spades, Queen);
+card_color (Hearts, Queen);
 
-card_value (Num (8));
-card_value King;
-card_value Ace;
-card_value Queen;
+card_value (Hearts, Num (8));
+card_value (Hearts, King);
+card_value (Hearts, Ace);
+card_value (Hearts, Queen);
 
 
 same_card ((Clubs, Jack), (Clubs, Jack));
@@ -30,8 +36,9 @@ contains_card((Clubs, Jack), [(Clubs, Jack), (Spades, Jack),(Hearts, King), (Clu
 
 exception no_card;
 
-remove_card((Clubs, Jack), [(Clubs, Jack), (Spades, Jack),(Hearts, King), (Clubs, Num(10))], no_card);
-(*remove_card((Clubs, Num(8)), [(Clubs, Jack), (Spades, Jack),(Hearts, King), (Clubs, Num(10))], no_card);*)
+val remove_card_happy = remove_card([(Clubs, Jack), (Spades, Jack),(Hearts, King), (Clubs, Num(10))], (Clubs, Jack), no_card);
+val remove_card_multi = remove_card([(Clubs, Jack), (Spades, Jack), (Clubs, Jack), (Hearts, King), (Clubs, Num(10))], (Clubs, Jack), no_card);
+(*val remove_card_err = remove_card((Clubs, Num(8)), [(Clubs, Jack), (Spades, Jack),(Hearts, King), (Clubs, Num(10))], no_card);*)
 
 all_same_color([(Clubs, Jack), (Spades, Jack)]);
 all_same_color([(Clubs, Jack), (Spades, Jack), (Hearts, King)]);

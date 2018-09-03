@@ -12,25 +12,32 @@ fun contains expr =
             |   (s, xs :: []) => same_string(s, xs)
             |   (s, xs :: xs') => same_string(s, xs) orelse contains(s, xs')
 
-fun all_except_option expr =
-    case expr of
-            (s, []) => []
-        |   (s, xs :: []) => if not(same_string(s, xs)) then xs::[] else []
-        |   (s, xs :: xs') => if not(same_string(s, xs)) then xs :: all_except_option(s, xs') else all_except_option(s, xs')
+ fun all_except expr = 
+            case expr of
+                (s, []) => []
+            |   (s, xs :: []) => if same_string(s, xs) then [] else xs::[]
+            |   (s, xs :: xs') => if same_string(s, xs) then all_except(s, xs') else xs :: all_except(s, xs')
+
+fun all_except_option (str, strs) =
+    if not(contains (str, strs)) then NONE
+    else 
+        case all_except(str, strs) of 
+                [] => NONE
+            |   new_strs  => SOME(new_strs)
 
 
 fun get_substitutions1 expr = 
     case expr of 
             ([], _) => []
-        |   (xs::[], s) => if contains(s,xs) then all_except_option(s, xs) else []
-        |   (xs::xs', s) => if contains(s,xs) then all_except_option(s, xs) @ get_substitutions1(xs', s) else get_substitutions1(xs', s)
+        |   (xs::[], s) => if contains(s,xs) then all_except(s, xs) else []
+        |   (xs::xs', s) => if contains(s,xs) then all_except(s, xs) @ get_substitutions1(xs', s) else get_substitutions1(xs', s)
 
 (*tail Recursion*)
 fun get_substitutions2 expr = 
      case expr of 
             ([], _) => []
-        |   (xs::[], s) => if contains(s,xs) then all_except_option(s, xs) else []
-        |   (xs::xs', s) => if contains(s,xs) then all_except_option(s, xs) @ get_substitutions1(xs', s) else get_substitutions1(xs', s)
+        |   (xs::[], s) => if contains(s,xs) then all_except(s, xs) else []
+        |   (xs::xs', s) => if contains(s,xs) then all_except(s, xs) @ get_substitutions1(xs', s) else get_substitutions1(xs', s)
 
 
 fun similar_names (xs, {first, middle, last}) = 
@@ -57,16 +64,16 @@ exception IllegalMove
 (* put your solutions for problem 2 here *)
 fun card_color card = 
     case card of
-        Clubs => Black
-    |   Spades => Black
-    |   Diamonds => Red
-    |   Hearts => Red
+        (Clubs,_) => Black
+    |   (Spades,_) => Black
+    |   (Diamonds,_) => Red
+    |   (Hearts,_) => Red
 
 fun card_value card =
     case card of
-        Ace => 11
-    |   Num i => i
-    |   _   => 10
+        (_, Ace) => 11
+    |   (_, Num i) => i
+    |   (_,_)   => 10
 
 fun same_card(c1 : card, c2 : card) = c1 = c2
 
@@ -78,13 +85,13 @@ fun contains_card (c, cs) =
 
 
 
-fun remove_card (c, cs, e) =
+fun remove_card (cs, c, e) =
     let
         fun all_except_card expr =
             case expr of
             (s, []) => []
-        |   (s, xs :: []) => if not(same_card(s, xs)) then xs::[] else []
-        |   (s, xs :: xs') => if not(same_card(s, xs)) then xs :: all_except_card(s, xs') else all_except_card(s, xs')
+        |   (s, xs :: []) => if same_card(s, xs) then [] else xs::[]
+        |   (s, xs :: xs') => if same_card(s, xs) then xs' else xs :: all_except_card(s, xs')
     in
         if contains_card(c, cs)
         then 
@@ -95,10 +102,10 @@ fun remove_card (c, cs, e) =
 
 fun all_same_color cs = 
     case cs of
-        [] => false
-    |   ((s,r) :: []) => true
-    |   ((s1,r1) :: (s2,r2) :: []) => card_color(s1) = card_color(s2)
-    |   ((s1,r1) :: (s2,r2) :: cs') => (card_color(s1) = card_color(s2)) andalso   all_same_color((s2,r2) :: cs')
+        [] => true
+    |   (c :: []) => true
+    |   (c1 :: c2 :: []) => card_color(c1) = card_color(c2)
+    |   (c1 :: c2 :: cs') => (card_color(c1) = card_color(c2)) andalso   all_same_color(c2 :: cs')
 
 
 fun sum_cards xs =
@@ -106,13 +113,13 @@ fun sum_cards xs =
         fun summation (xs, acc) =
             case xs of 
                 [] => acc
-            |   ((s,r) :: xs') => summation(xs', acc + card_value(r))
+            |   (x :: xs') => summation(xs', acc + card_value(x))
     in  
         summation(xs, 0)
     end
 
 
-fun score (cs, goal) =
+fun score (cs , goal) =
     let 
         val divided_by = if all_same_color(cs) then 2 else 1 
         val sum_of_cards = sum_cards (cs) 
@@ -124,24 +131,17 @@ fun score (cs, goal) =
     end
 
 
-
-(*
-Write a function officiate, which “runs a game.”  
-It takes 
-    a card list (the card-list), 
-    a move list (what the player “does” at each point), 
-    an int (the goal) 
-    and returns the score at the end of the game after processing (some or all of) the moves in the move list in order.  
-    
-Use a locally defined recursive helper function that takes several arguments that together represent the current state of the game.  As described above:
-• The game starts with the held-cards being the empty list.
-• The game ends if there are no more moves.  (The player chose to stop since the move list is empty.)
-• If the player discards some card c, play continues (i.e., make a recursive call) with the held-cards
-not  having c and  the  card-list  unchanged. 
-If c is  not  in  the  held-cards,  raise  the IllegalMove exception.
-• If the player draws and the card-list is (already) empty, the game is over.  Else if drawing causes
-the sum of the held-cards to exceed the goal, the game is over (after drawing).  Else play continues 
-with a larger held-cards and a smaller card-list.
-
-Sample solution for (g) is under 20 lines.
-*)
+fun officiate (cards, moves, goal) = 
+    let   
+        fun continueGame (cards : card list, my_cards, moves) =
+            case (moves, cards) of
+                   ([], _) => my_cards
+                |  (Discard c :: moves', _) => continueGame(cards, remove_card(my_cards, c, IllegalMove), moves')
+                |  (Draw :: moves', []) =>  my_cards
+                |  (Draw :: moves', c :: remaining_cards) => 
+                                                    if (card_value(c) + sum_cards(my_cards)) < goal 
+                                                        then continueGame(remaining_cards, c::my_cards, moves)
+                                                    else my_cards
+    in
+        score(continueGame(cards, [], moves), goal)
+    end
