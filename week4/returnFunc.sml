@@ -19,3 +19,19 @@ val nine_1 = triple1 3 (* apply the val triple on arg = 3 *)
 
 
 (* t1 -> t2 -> t3 -> t4 means t1 -> (t2 -> (t3 -> (t4))) *)
+datatype exp = Constant of int
+        |  Negate of exp
+        |  Add of exp * exp
+        |  Mul of exp * exp
+
+(* check if the constants in the function returns true when function f is applied *)
+(* (int -> bool) * exp -> bool --> takes a function int -> bool and applies the same on the expression and returns a bool. This is a predicate*)
+fun true_of_all_constants (f,e) =
+    case e of
+            Constant i => f i
+        |   Negate e1 => true_of_all_constants(f, e1)
+        |   Add (e1,e2) =>  true_of_all_constants(f, e1) andalso true_of_all_constants(f, e2)
+        |   Mul (e1,e2) =>  true_of_all_constants(f, e1) andalso true_of_all_constants(f, e2)
+
+fun is_even e = true_of_all_constants (fn x => x mod 2 = 0, e)
+
